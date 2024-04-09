@@ -6,13 +6,17 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated,AllowAny
 from .models import BlogPost,Category
 from django.contrib.auth import get_user_model
+from api.permissions import IsOwnerOrReadOnly
 
 User = get_user_model()
+
+class IsBlogOwnerOrReadOnly(IsOwnerOrReadOnly):
+    user_field = "author"
 
 class BlogPostUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
-    
+    permission_classes = [IsBlogOwnerOrReadOnly]
     def get_queryset(self):
         qs = super().get_queryset()
         if not self.request.method == "GET":
