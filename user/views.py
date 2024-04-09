@@ -18,6 +18,9 @@ class UserSignUpApiView(generics.CreateAPIView):
         serializer = self.get_serializer(data=request.data)
         if serializer.is_valid():
             user = serializer.save()
+            user.set_password(request.data.get('password'))
+            # Save the user object with the hashed password
+            user.save()
             return Response({'message': 'User Registration Success'}, status=status.HTTP_201_CREATED)
         
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
@@ -32,9 +35,10 @@ class UserLoginView(generics.CreateAPIView):
         if serializer.is_valid():
             email_or_username = serializer.validated_data["email_or_username"]
             password = serializer.validated_data["password"]
-
+            print(email_or_username)
+            print(password)
             user = authenticate(username=email_or_username, password=password)
-
+            print(user)
             if user is not None:
                 token, created = Token.objects.get_or_create(user=user)
                 response_data = {'token': token.key,"user_id":user.id }
