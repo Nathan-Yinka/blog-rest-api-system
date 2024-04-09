@@ -13,6 +13,13 @@ class BlogPostUpdateDeleteView(generics.RetrieveUpdateDestroyAPIView):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
     
+    def get_queryset(self):
+        qs = super().get_queryset()
+        if not self.request.method == "GET":
+            qs = qs.filter(author=self.request.user)
+        return qs
+    
+    
 class BlogPostListCreateView(generics.ListCreateAPIView):
     queryset = BlogPost.objects.all()
     serializer_class = BlogPostSerializer
