@@ -35,10 +35,8 @@ class UserLoginView(generics.CreateAPIView):
         if serializer.is_valid():
             email_or_username = serializer.validated_data["email_or_username"]
             password = serializer.validated_data["password"]
-            print(email_or_username)
-            print(password)
             user = authenticate(username=email_or_username, password=password)
-            print(user)
+
             if user is not None:
                 token, created = Token.objects.get_or_create(user=user)
                 response_data = {'token': token.key,"user_id":user.id }
